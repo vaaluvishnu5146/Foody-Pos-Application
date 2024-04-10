@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext, createContext } from "react";
+import { useState, useEffect, useContext, createContext } from "react";
+import PropTypes from "prop-types";
 
 const CartContext = createContext({
   cart: [],
@@ -8,6 +9,7 @@ const CartContext = createContext({
   handleItemQuantity: () => {},
   cartValue: 0,
   taxApplicable: [],
+  resetCart: () => {},
 });
 
 export const useCart = () => useContext(CartContext);
@@ -62,6 +64,11 @@ export default function CartContextProvider({ children }) {
     }
   }
 
+  function resetCart() {
+    setCart([]);
+    setCartValue(0);
+  }
+
   return (
     <CartContext.Provider
       value={{
@@ -72,9 +79,14 @@ export default function CartContextProvider({ children }) {
         handleItemQuantity,
         cartValue,
         taxApplicable,
+        resetCart,
       }}
     >
       {children}
     </CartContext.Provider>
   );
 }
+
+CartContextProvider.propTypes = {
+  children: PropTypes.node,
+};

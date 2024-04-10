@@ -6,6 +6,7 @@ import Order from "./Pages/Order";
 import Home from "./Pages/home";
 import Products from "./Pages/Products";
 import Product from "./Pages/Product";
+import Settings from "./Pages/Settings";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route Component={Order} path="/store/order" />
         <Route Component={Products} path="/store/products" />
         <Route Component={Product} path="/store/product/:id" />
+        <Route Component={Settings} path="/store/settings" />
       </Route>
     </Routes>
   );

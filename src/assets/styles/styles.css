@@ -2,6 +2,7 @@
   --primary: #735cdd;
   --secondary: #c5bcf1;
   --white: #ffffff;
+  --sidebar-width: 80px;
 }
 
 html,
@@ -33,6 +34,11 @@ button {
   color: var(--white);
 }
 
+svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
 .d-flex {
   display: flex;
 }
@@ -43,6 +49,14 @@ button {
 
 .flex-wrap {
   flex-wrap: wrap;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
 }
 
 .justify-between {
@@ -80,7 +94,7 @@ button {
 
 /* SIDEBAR */
 .sidebar {
-  width: 100px;
+  width: var(--sidebar-width);
   height: 100%;
   background: var(--primary);
   padding: 10px;
@@ -88,7 +102,7 @@ button {
 }
 
 .product-listing-area {
-  width: calc(100% - 100px - 25%);
+  width: calc(100% - var(--sidebar-width) - 25%);
   height: 100%;
   border: 2px solid var(--primary);
 }
@@ -157,7 +171,7 @@ button {
 
 /* NAV_ITEM */
 .nav_item {
-  width: 100%;
+  width: 50px;
   height: 50px;
   background: var(--white);
   color: var(--primary);

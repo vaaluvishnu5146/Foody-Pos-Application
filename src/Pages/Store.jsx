@@ -3,6 +3,7 @@ import CartCard from "../Components/CartCard";
 import { useProducts } from "../Contexts/Product.context";
 import { useCart } from "../Contexts/Cart.context";
 import EmptyCart from "../assets/emptycart.webp";
+import { useOrder } from "../Contexts/Order.context";
 
 export default function Store() {
   const { products = [] } = useProducts();
@@ -13,7 +14,22 @@ export default function Store() {
     handleItemQuantity = () => {},
     cartValue,
     taxApplicable,
+    resetCart,
   } = useCart();
+
+  const { createOrder = () => {} } = useOrder();
+
+  function handleCreateOrderClick(e) {
+    e.preventDefault();
+    if (cart && cart.length > 0) {
+      const order = {
+        items: cart,
+        orderValue: cartValue,
+      };
+      createOrder(order);
+      resetCart();
+    }
+  }
 
   return (
     <>
@@ -76,7 +92,9 @@ export default function Store() {
                   </li>
                 </ul>
               </div>
-              <button className="btn b-r-10">Pay Now</button>
+              <button className="btn b-r-10" onClick={handleCreateOrderClick}>
+                Pay Now
+              </button>
             </div>
           </>
         ) : (
