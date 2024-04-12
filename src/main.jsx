@@ -5,15 +5,18 @@ import "./assets/styles/styles.css";
 import ProductContextProvider from "./Contexts/Product.context.jsx";
 import CartContextProvider from "./Contexts/Cart.context.jsx";
 import OrdersContextProvider from "./Contexts/Order.context.jsx";
+import AuthContextProvider from "./Contexts/Auth.context.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <ProductContextProvider>
-    <CartContextProvider>
-      <OrdersContextProvider>
-        <Router>
-          <App />
-        </Router>
-      </OrdersContextProvider>
-    </CartContextProvider>
-  </ProductContextProvider>
+  <AuthContextProvider>
+    <ProductContextProvider>
+      <CartContextProvider>
+        <OrdersContextProvider>
+          <Router>
+            <App />
+          </Router>
+        </OrdersContextProvider>
+      </CartContextProvider>
+    </ProductContextProvider>
+  </AuthContextProvider>
 );

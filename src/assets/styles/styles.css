@@ -180,3 +180,9 @@ svg {
 .products-container {
   width: 100%;
 }
+
+.loginFormContainer {
+  width: 300px;
+  height: 400px;
+  background-color: var(--white);
+}

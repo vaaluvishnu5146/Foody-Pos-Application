@@ -1,5 +1,10 @@
-import { useState, useEffect, useContext, createContext } from "react";
+import { useEffect, useContext, createContext, useReducer } from "react";
 import PropTypes from "prop-types";
+
+const taxApplicable = [
+  { name: "GST", value: 18, unit: "%" },
+  { name: "Door Delivery", value: 20, unit: "inr" },
+];
 
 const CartContext = createContext({
   cart: [],
@@ -14,19 +19,31 @@ const CartContext = createContext({
 
 export const useCart = () => useContext(CartContext);
 
-export default function CartContextProvider({ children }) {
-  const [cart, setCart] = useState([]);
-  const [cartValue, setCartValue] = useState(0);
-  const taxApplicable = [
-    { name: "GST", value: 18, unit: "%" },
-    { name: "Door Delivery", value: 20, unit: "inr" },
-  ];
-
-  useEffect(() => {
-    if (cart && cart.length > 0 && taxApplicable) {
-      let grandTotal = 0;
-      for (let i = 0; i < cart.length; i++) {
-        grandTotal += cart[i].price * cart[i].quantity;
+function reducer(state, action = {}) {
+  switch (action.type) {
+    case "addToCart":
+      var cartCopy = [...state.cart];
+      cartCopy.push({ ...action.payload, quantity: 1 });
+      return { ...state, cart: cartCopy };
+    case "handleQuantityChange":
+      var copy = [...state.cart];
+      var matchingProduct = copy.find((item) => item._id === action.payload.id);
+      if (matchingProduct) {
+        matchingProduct.quantity =
+          action.payload.type === "decrement"
+            ? matchingProduct.quantity - 1
+            : matchingProduct.quantity + 1;
+        // setCart(cartCopy);
+      } else {
+        console.log("No Items matching", action.payload.id);
+      }
+      return { ...state, cart: copy };
+    case "resetCart":
+      return { ...state, cart: [] };
+    case "calculateCartTotal":
+      var grandTotal = 0;
+      for (let i = 0; i < state.cart.length; i++) {
+        grandTotal += state.cart[i].price * state.cart[i].quantity;
       }
       for (let t = 0; t < taxApplicable.length; t++) {
         if (taxApplicable[t].unit === "%") {
@@ -35,49 +52,52 @@ export default function CartContextProvider({ children }) {
           grandTotal += taxApplicable[t].value;
         }
       }
-      setCartValue(grandTotal);
+      return { ...state, cartValue: grandTotal };
+    default:
+      // PROGRAM HERE
+      break;
+  }
+}
+
+const INITIAL_STATE = {
+  cart: [],
+  cartValue: 0,
+};
+
+export default function CartContextProvider({ children }) {
+  const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+
+  useEffect(() => {
+    if (state.cart && state.cart.length > 0 && taxApplicable) {
+      dispatch({ type: "calculateCartTotal" });
     }
-  }, [cart]);
+  }, [state.cart]);
 
   function addToCart(data = {}) {
-    const cartCopy = [...cart];
-    cartCopy.push({ ...data, quantity: 1 });
-    setCart(cartCopy);
-  }
-
-  function findAleadyInTheCart(data = {}) {
-    const product = cart.find((d) => d._id === data._id);
-    return product && product._id ? true : false;
+    dispatch({ type: "addToCart", payload: data });
   }
 
   function handleItemQuantity(type = "decrement", id = "") {
-    const cartCopy = [...cart];
-    const matchingProduct = cartCopy.find((item) => item._id === id);
-    if (matchingProduct) {
-      matchingProduct.quantity =
-        type === "decrement"
-          ? matchingProduct.quantity - 1
-          : matchingProduct.quantity + 1;
-      setCart(cartCopy);
-    } else {
-      console.log("No Items matching", id);
-    }
+    dispatch({ type: "handleQuantityChange", payload: { type, id } });
   }
 
   function resetCart() {
-    setCart([]);
-    setCartValue(0);
+    dispatch({ type: "resetCart" });
+  }
+
+  function findAleadyInTheCart(data = {}) {
+    const product = state.cart.find((d) => d._id === data._id);
+    return product && product._id ? true : false;
   }
 
   return (
     <CartContext.Provider
       value={{
-        cart,
-        setCart,
+        cart: state.cart,
         addToCart,
         findAleadyInTheCart,
         handleItemQuantity,
-        cartValue,
+        cartValue: state.cartValue,
         taxApplicable,
         resetCart,
       }}
