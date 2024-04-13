@@ -7,6 +7,7 @@ import Home from "./Pages/home";
 import Products from "./Pages/Products";
 import Product from "./Pages/Product";
 import Settings from "./Pages/Settings";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function App() {
   return (

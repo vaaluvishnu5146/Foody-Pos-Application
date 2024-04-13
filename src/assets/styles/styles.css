@@ -2,6 +2,7 @@
   --primary: #735cdd;
   --secondary: #c5bcf1;
   --white: #ffffff;
+  --grey: #f6f6f6;
   --sidebar-width: 80px;
 }
 
@@ -32,6 +33,8 @@ button {
 .btn {
   background-color: var(--primary);
   color: var(--white);
+  outline: none;
+  border: none;
 }
 
 svg {
@@ -181,8 +184,46 @@ svg {
   width: 100%;
 }
 
-.loginFormContainer {
-  width: 300px;
-  height: 400px;
-  background-color: var(--white);
+.auth_page_container {
+  width: 100%;
+  height: 100vh;
+  background: var(--grey);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth_form_card {
+  width: 400px;
+  min-height: 400px;
+  background: var(--white);
+  border-radius: 5px;
+  padding: 20px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  > img {
+    width: 100px;
+  }
+
+  > .inputField {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+
+    > label {
+      font-size: 1.2rem;
+      font-weight: 400;
+      margin-bottom: 5px;
+    }
+
+    > input {
+      height: 50px;
+      padding-inline-start: 10px;
+      font-size: 1rem;
+    }
+  }
 }

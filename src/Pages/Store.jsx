@@ -1,12 +1,17 @@
+import { useState } from "react";
 import ProductCard from "../Components/ProductCard";
 import CartCard from "../Components/CartCard";
 import { useProducts } from "../Contexts/Product.context";
 import { useCart } from "../Contexts/Cart.context";
 import EmptyCart from "../assets/emptycart.webp";
 import { useOrder } from "../Contexts/Order.context";
+import PaymentsModal from "../Components/PaymentsModal";
+import { useAuth } from "../Contexts/Auth.context";
 
 export default function Store() {
   const { products = [] } = useProducts();
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [transactionType, setTransactionType] = useState("cod");
   const {
     cart = [],
     addToCart = () => {},
@@ -16,15 +21,24 @@ export default function Store() {
     taxApplicable,
     resetCart,
   } = useCart();
+  const { decodedToken = {} } = useAuth();
 
   const { createOrder = () => {} } = useOrder();
 
   function handleCreateOrderClick(e) {
     e.preventDefault();
+    setPaymentModalOpen(true);
+  }
+
+  function handleOrderSubmit() {
     if (cart && cart.length > 0) {
       const order = {
-        items: cart,
+        user: decodedToken.userId,
+        products: cart,
         orderValue: cartValue,
+        isPaid: false,
+        transactionType,
+        transactionId: null,
       };
       createOrder(order);
       resetCart();
@@ -35,9 +49,9 @@ export default function Store() {
     <>
       <div className="container product-listing-area b-r-10">
         <div className="header">
-          <h1 className="m-b-10">All Items</h1>
+          <h2 className="m-b-10">All Items</h2>
         </div>
-        <div className="d-flex gap-10 flex-wrap">
+        <div className="d-flex justify-content-start gap-10 flex-wrap">
           {products.map((product, index) => (
             <ProductCard
               key={`${index}-${product.name}`}
@@ -52,7 +66,7 @@ export default function Store() {
         {cart && cart.length > 0 ? (
           <>
             <div className="header">
-              <h1 className="m-b-10">Cart</h1>
+              <h2 className="m-b-10">Cart</h2>
             </div>
             <div
               className="cart-listing-container d-flex flex-column gap-10"
@@ -71,11 +85,11 @@ export default function Store() {
             <div className="cart-value-section" style={{ height: "35%" }}>
               <h1 className="m-b-10">Cart Value</h1>
               <div className="tax-item">
-                <h2>Tax</h2>
+                <h3>Tax</h3>
                 <ul>
                   {taxApplicable.map((tax, index) => (
                     <li key={`${tax.name}-${index}`}>
-                      <h3>{tax.name}</h3>
+                      <h5>{tax.name}</h5>
                       <p>
                         {tax.value}
                         {tax.unit}
@@ -87,11 +101,17 @@ export default function Store() {
               <div className="tax-item">
                 <ul>
                   <li>
-                    <h3>Grand Total</h3>
-                    <h4>{cartValue}</h4>
+                    <h4>Grand Total</h4>
+                    <h5>{cartValue}</h5>
                   </li>
                 </ul>
               </div>
+              <PaymentsModal
+                show={paymentModalOpen}
+                setOpen={setPaymentModalOpen}
+                handleTransactionType={setTransactionType}
+                handleOrderSubmit={handleOrderSubmit}
+              />
               <button className="btn b-r-10" onClick={handleCreateOrderClick}>
                 Pay Now
               </button>
